@@ -1,0 +1,1 @@
+g++ -O3 -march=i486 ART3x0.cpp -o ART3x0.bin -L. -lART3x0

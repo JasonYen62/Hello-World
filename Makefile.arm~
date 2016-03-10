@@ -1,0 +1,28 @@
+# Make file for ART3x0 Reader SDK 
+
+all: ART3x0
+CC = arm-linux-g++
+DRIVER_PATH = Driver
+SQLLIB = /usr/local/lib
+SQLINC = /usr/local/include
+
+CFLAGS = -mcpu=cortex-a9
+LIBS   = -lpthread 
+#-lSDL -ldl -lsqlite3
+
+ART3x0: rs232.o Network.o RU25Lib.o ART3x0.o
+	$(CC) -shared -o libART3x0.so rs232.o Network.o RU25Lib.o
+	$(CC) -o ./arm/ART3x0.bin rs232.o Network.o RU25Lib.o ART3x0.o
+	$(CC) -O3 -L. -lART3x0 -o ART3x0 ART3x0.o 
+
+rs232.o: $(DRIVER_PATH)/rs232.cpp
+	$(CC) -I$(DRIVER_PATH) $(CFLAGS) -c $(DRIVER_PATH)/rs232.cpp
+Network.o: $(DRIVER_PATH)/Network.cpp
+	$(CC) -I$(DRIVER_PATH) $(CFLAGS) -c $(DRIVER_PATH)/Network.cpp
+RU25Lib.o: RU25Lib.cpp
+	$(CC) -I$(DRIVER_PATH) $(CFLAGS) -c RU25Lib.cpp
+ART3x0.o: ART3x0.cpp
+	$(CC) -I$(DRIVER_PATH) $(CFLAGS) -c ART3x0.cpp
+clean: 
+	-rm ART3x0.o rs232.o ART3x0 RU25Lib.o Network.o libART3x0.so
+	

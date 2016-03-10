@@ -1,0 +1,3 @@
+export PATH=$PATH:/home/jason/DS31LBV1150/cross_compiler/fsl-linaro-toolchain/bin
+
+arm-linux-g++ -shared -fPIC -o libART3x0risk.so RU25Lib.o rs232.o Network.o

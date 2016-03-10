@@ -1,0 +1,1 @@
+#include <stdio.h>int main(void){	while(1)	{		printf("Test screen printf \n");	}	return 0;}

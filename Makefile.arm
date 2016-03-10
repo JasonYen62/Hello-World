@@ -1,0 +1,68 @@
+# Make file for ART3x0 Reader SDK 
+
+all: wpcDemo
+wpc: wpcDemo
+sr1: SmartReader
+sr2: SmartReader2
+art: ART3x0
+echo: EchoServer
+
+CC = arm-linux-g++
+DRIVER_PATH = Driver
+WEBSRV_PATH = Soap
+UTIL_PATH = Util
+SQLLIB = /usr/local/lib
+SQLINC = /usr/local/include
+
+CFLAGS = -mcpu=cortex-a9 -march= armv7-a -mfpu= vfpv3/neon -mfloat-abi=softfp/soft/hard
+LIBS   = -lpthread 
+#-lSDL -ldl -lsqlite3
+
+wpcDemo: rs232_ubc.o Network.o Datafile.o RU25Lib.o wpcTest.o soapC.o soapWPCEventTrackingServiceSoapProxy.o stdsoap2.o wpcDemo.o watchDog.o
+	# compile a static Execution file wpcDemo
+	$(CC) -o wpcDemo_ARM.bin rs232_ubc.o Network.o RU25Lib.o soapC.o soapWPCEventTrackingServiceSoapProxy.o stdsoap2.o wpcTest.o wpcDemo.o Datafile.o watchDog.o
+SmartReader: rs232_ubc.o Network.o RU25Lib.o SmartReader.o
+SmartReader2: $(LIBS) rs232_ubc.o Network.o RU25Lib.o SmartReader2.o
+	$(CC) -o SmartReader2.bin $(LIBS) rs232_ubc.o Network.o RU25Lib.o SmartReader2.o
+EchoServer:	rs232_ubc.o Network.o RU25Lib.o EchoServer.o
+	$(CC) -o EchoServer.bin $(LIBS) rs232_ubc.o Network.o RU25Lib.o EchoServer.o
+ART3x0: rs232_ubc.o Network.o RU25Lib.o ART3x0.o	
+	# compile a static Execution file
+	$(CC) -o ART3x0ubc.bin rs232_ubc.o Network.o RU25Lib.o ART3x0.o
+	
+	# compile a shared library
+	#$(CC) -fPIC -shared -o libART3x0.so rs232_ubc.o Network.o RU25Lib.o
+	# compile a Execution file with shared library
+	#$(CC) -L. -lART3x0 -o ART3x0 ART3x0.o 
+
+soapC.o: $(WEBSRV_PATH)/soapC.cpp
+	$(CC) -I$(WEBSRV_PATH) -c $(WEBSRV_PATH)/soapC.cpp
+soapWPCEventTrackingServiceSoapProxy.o: $(WEBSRV_PATH)/soapWPCEventTrackingServiceSoapProxy.cpp
+	$(CC) -I$(WEBSRV_PATH) -c $(WEBSRV_PATH)/soapWPCEventTrackingServiceSoapProxy.cpp
+stdsoap2.o: $(WEBSRV_PATH)/stdsoap2.cpp
+	$(CC) -I$(WEBSRV_PATH) -c $(WEBSRV_PATH)/stdsoap2.cpp
+wpcTest.o: $(WEBSRV_PATH)/wpcTest.cpp
+	$(CC) -I$(WEBSRV_PATH) -c $(WEBSRV_PATH)/wpcTest.cpp
+Datafile.o: $(UTIL_PATH)/Datafile.cpp
+	$(CC) -I$(UTIL_PATH) -c $(UTIL_PATH)/Datafile.cpp	
+rs232_ubc.o: $(DRIVER_PATH)/rs232_ubc.cpp
+	$(CC) -I$(DRIVER_PATH) -c $(DRIVER_PATH)/rs232_ubc.cpp
+Network.o: $(DRIVER_PATH)/Network.cpp
+	$(CC) -I$(DRIVER_PATH) -c $(DRIVER_PATH)/Network.cpp
+watchDog.o: $(DRIVER_PATH)/watchDog.cpp
+	$(CC) -I$(DRIVER_PATH) -c $(DRIVER_PATH)/watchDog.cpp
+RU25Lib.o: RU25Lib.cpp
+	$(CC) -I$(DRIVER_PATH) -c RU25Lib.cpp
+ART3x0.o: ART3x0.cpp
+	$(CC) -I$(DRIVER_PATH) -c ART3x0.cpp
+SmartReader.o: SmartReader.cpp
+	$(CC) -I$(DRIVER_PATH) -c SmartReader.cpp
+SmartReader2.o: SmartReader2.cpp
+	$(CC) -I$(DRIVER_PATH) -c SmartReader2.cpp
+EchoServer.o: EchoServer.cpp
+	$(CC) -I$(DRIVER_PATH) -c EchoServer.cpp	
+wpcDemo.o: wpcDemo.cpp
+	$(CC) -I$(DRIVER_PATH) -c wpcDemo.cpp		
+clean: 
+	-rm ART3x0.o rs232_ubc.o ART3x0 RU25Lib.o Network.o libART3x0.so SmartReader.o soapC.o soapWPCEventTrackingServiceSoapProxy.o stdsoap2.o wpcDemo.o Datafile.o watchDog.o
+	
